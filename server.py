@@ -39,6 +39,9 @@ class ChatServer:
 		while True:
 			recString = self.tcpConnections[nickname].recv(4096)
 			print nickname + " - " + recString
+			if recString == "list":
+				self.tcpConnections[nickname].send("sua lista devia aparecer")
+				self.tcpConnections[nickname].send(str(self.tcpConnections.keys()))
 
 	def handleUDPConnection(self, nickname):
 		pass

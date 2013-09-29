@@ -28,9 +28,12 @@ class ServerConnection:
 		self.socket.connect((self.host, self.port))
 		print self.socket.recv(4096)
 		self.socket.send(mode + " " + nickname)
+		thread.start_new_thread(self.listenServer, (0,))
 
-	def listen(self):
-		pass
+	def listenServer(self, dummy):
+		while True:
+			recString = self.socket.recv(4096)
+			print recString
 		
 class ServerTCPConnection(ServerConnection):
 	def __init__(self, host, port, mode, nickname):
@@ -40,11 +43,10 @@ class ServerTCPConnection(ServerConnection):
 		print("aqui ficaria uma lista de opcoes para o usuario")
 		cmd = raw_input("Digite um comando e as opcoes correspondentes: ")
 		while  cmd != "q" :
-			params = cmd.split(" ")
-			if params[0] == "list": #connect to server
-				self.socket.send("list")
+			#params = cmd.split(" ")
+			#if params[0] == "list": #connect to server
+			self.socket.send(cmd)
 			cmd = raw_input("Digite um comando e as opcoes correspondentes: ")
-			print self.socket.recv(4096)
 		self.socket.close()
 
 
