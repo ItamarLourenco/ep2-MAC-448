@@ -1,31 +1,69 @@
 import sys
 import socket
 
-class ServerConnection:
-	def __init__(self, host, port):
+class ClientConnection:
+	def __init__(self, host, port, mode):
 		self.socket = socket.socket()         # Create a socket object
-
 		self.host = host
 		self.port = port
-
+		self.mode = mode
 		self.socket.connect((self.host, self.port))
-		print self.socket.recv(1024)
-		self.socket.close                     # Close the socket when done
+		print self.socket.recv(4096)
+
+	def send(self, message):
+		pass
+
+	def start(self):
+		pass
+
+
+class ServerConnection:
+	def __init__(self, host, port, mode, nickname):
+		self.socket = socket.socket()         # Create a socket object
+		self.host = host
+		self.port = port
+		self.mode = mode
+		self.nickname = nickname
+		self.socket.connect((self.host, self.port))
+		print self.socket.recv(4096)
+		self.socket.send(mode + " " + nickname)
+
+	def listen(self):
+		pass
 		
+class ServerTCPConnection(ServerConnection):
+	def __init__(self, host, port, mode, nickname):
+		ServerConnection.__init__(self, host, port, mode, nickname)
+	
+	def listen(self):
+		print("aqui ficaria uma lista de opcoes para o usuario")
+		cmd = raw_input("Digite um comando e as opcoes correspondentes: ")
+		while  cmd != "q" :
+			params = cmd.split(" ")
+			if params[0] == "list": #connect to server
+				self.socket.send("list")
+			cmd = raw_input("Digite um comando e as opcoes correspondentes: ")
+			print self.socket.recv(4096)
+		self.socket.close()
+
+
+class ServerUDPConnection(ServerConnection):
+	def __init__(self):
+		ServerConnection.__init__(self)
 
 class ChatClient:
 	def __init__(self):
 		pass
 
 	def start(self):
-		print("aqui ficaria uma lista de opcoes para o usuario")
-		cmd = raw_input("Digite um comando e as opcoes correspondentes: ")
-		while  cmd != "q" :
-			params = cmd.split(" ")
-			if params[0] == "c": #connect to server
-				self.conn = ServerConnection(params[1], int(params[2]))
-			cmd = raw_input("Digite um comando e as opcoes correspondentes: ")
+		if sys.argv[3] == "tcp":
+			self.conn = ServerTCPConnection(sys.argv[1], int(sys.argv[2]), sys.argv[3], sys.argv[4])
+		elif sys.argv[3] == "udp":
+			self.conn = ServerUDPConnection(sys.argv[1], int(sys.argv[2]), sys.argv[3], sys.argv[4])
 
+		self.conn.listen()
+
+# server port mode nickname
 def main():
     client = ChatClient()
     client.start()
