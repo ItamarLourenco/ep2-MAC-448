@@ -1,5 +1,6 @@
 import sys
 import socket
+import thread
 
 class ClientConnection:
 	def __init__(self, host, port, mode):

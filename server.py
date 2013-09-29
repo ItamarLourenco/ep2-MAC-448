@@ -1,5 +1,6 @@
 import sys
 import socket
+import thread
 
 class Client:
 	def __init__(self, conn, nickname):
@@ -31,7 +32,16 @@ class ChatServer:
 		   connParams = connString.split(" ")
 		   if connParams[0] == "tcp":
 		   		self.tcpConnections[connParams[1]] = c
+		   		thread.start_new_thread(self.handleTCPConnection, (connParams[1], ))
 		   #c.close()                # Close the connection
+
+	def handleTCPConnection(self, nickname):
+		while True:
+			recString = self.tcpConnections[nickname].recv(4096)
+			print nickname + " - " + recString
+
+	def handleUDPConnection(self, nickname):
+		pass
 
 #port maxConnections
 def main():
